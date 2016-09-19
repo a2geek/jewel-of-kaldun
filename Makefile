@@ -2,23 +2,29 @@
 include local.config
 
 # Local stuff:
-SRC = 
-PGM = jok
-SYS = jok.system
+# > PGMS is a list of direct assembler targetrs
+PGMS = jok.system.s
+# > SRC is a list of all source files used to trigger a rebuild
+SRC = $(PGMS)
+SYS = JOK.SYSTEM
 TYPE = SYS
 ADDR = 0x2000
 TMPL = template.po
-DISK = jewel-of-kaldun.po
+APP = jewel-of-kaldun
+DISK = $(APP).po
+ZIP = $(APP).zip
 
 
 jok: $(SRC)
-	$(ASM) $(PGM).s
+	$(ASM) $(PGMS)
 	cp $(TMPL) $(DISK)
-	cat $(PGM) | $(AC) -p $(DISK) $(SYS) $(TYPE) $(ADDR)
+	cat $(SYS) | $(AC) -p $(DISK) $(SYS) $(TYPE) $(ADDR)
 	$(AC) -k $(DISK) $(SYS)
 	$(AC) -ll $(DISK)
-	zip $(PGM).zip $(DISK)
+	zip $(ZIP) $(DISK)
 
 clean:
-	rm $(PGM) $(DISK) $(PGM).zip
+	rm $(PGM) $(DISK) $(ZIP)
+	rm *_Output.txt _FileInformation.txt
+	rm $(SYS)
 
