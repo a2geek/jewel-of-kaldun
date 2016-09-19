@@ -31,5 +31,5 @@ jok: $(SRC)
 clean:
 	rm $(PGM) $(DISK) $(ZIP)
 	rm *_Output.txt _FileInformation.txt
-	rm $(JOK_SYS).bin
+	rm $(JOK_SYS).bin $(NEWGAME).bin
 
