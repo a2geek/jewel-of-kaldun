@@ -1,0 +1,9 @@
+# This a sample configuration for the Makefile.  Make a copy and modify for your system.
+# These particular examples are from a Cygwin setup.  It can also be setup for the Linux or Mac OS X environment.
+
+# Full command-line to Merlin32 assembler.  Note that Merlin32 requires the first path be to the Merlin library
+ASM = Merlin32 -V /usr/local/share/Merlin32/Library
+
+# Command to launch AppleCommander
+AC = java -jar "C:\Users\rob\From DOODLE4\Java Applications\AppleCommander releases\AppleCommander-1.3.5.14-ac.jar"
+
