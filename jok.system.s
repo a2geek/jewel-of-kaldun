@@ -273,6 +273,6 @@ SUM         HEX     000000                      ; check sum
 
 * Save file:
 
-            SAV     JOK.SYSTEM
+            SAV     JOK.SYSTEM.bin
 
 
