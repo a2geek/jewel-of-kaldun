@@ -5,8 +5,6 @@
 
             TYP     $FF                         ; system program
             ORG     $2000                       ; they originate @ $2000
-            EXP     OFF                         ; macro expansion
-            TR      ON                          ; truncate
 
 * General Macros --
 
@@ -108,8 +106,9 @@ TIT_LEN     EQU     $2000                       ; Length of Title (full screen)
             STA     $BF6F
 * Load in Title:
             @OPEN   #TIT_NAME;#TIT_BUFF;REFNUM
-            BCS     :HELPERR                    ; can't quite make it.
-            @READ   REFNUM;#TIT_ADDR;#TIT_LEN
+            BCC     :OK_TITLE
+            JMP     LOADERRT
+:OK_TITLE   @READ   REFNUM;#TIT_ADDR;#TIT_LEN
             @CLOSE  REFNUM
 * Print version of Loader:
             LDY     #19
@@ -121,37 +120,56 @@ TIT_LEN     EQU     $2000                       ; Length of Title (full screen)
             JSR     CHECKSUM
 * Load in JOK:
             @OPEN   #JOK_NAME;#JOK_BUFF;REFNUM
-:HELPERR    BCS     :HELPER2
-            @READ   REFNUM;#JOK_ADDR;#JOK_LEN
+            BCC     :OK_JOK
+            JMP     LOADERRJ
+:OK_JOK     @READ   REFNUM;#JOK_ADDR;#JOK_LEN
             @CLOSE  REFNUM
 * Load in JOK end game:
             @OPEN   #JOK2NAME;#JOK2BUFF;REFNUM
-:HELPER2    BCS     LOADERR2
+            BCS     LOADERRE
             @READ   REFNUM;#JOK2ADDR;#JOK2LEN
             @CLOSE  REFNUM
 * Check Checksum:              (A0E647)
             LDA     SUM+2
             CMP     #$A0
-            BNE     DATACORR
+            BNE     :DATACORR
             LDA     SUM+1
             CMP     #$E6
             BNE     DATACORR
             LDA     SUM
             CMP     #$47
-            BNE     DATACORR
+:DATACORR   BNE     DATACORR
 * Start JOK:
             JMP     JOK_ADDR                    ; begin game!
 
-LOADERR     LDY     #40
-:LOOP       LDA     ERRORMSG-1,Y
+LOADERRT    LDA     #>TIT_NAME
+            LDY     #<TIT_NAME
+            JMP     :MSG
+LOADERRJ    LDA     #>JOK_NAME
+            LDY     #<JOK_NAME
+            JMP     :MSG
+LOADERRE    LDA     #>JOK2NAME
+            LDY     #<JOK2NAME
+:MSG        PHA
+            TYA
+            PHA
+            LDY     #40
+:LOOP1      LDA     ERRORMSG-1,Y
             STA     LINE24-1,Y
             DEY
-            BNE     :LOOP
-            BEQ     ERRORXX
-LOADERR2    LDY     #40
-:LOOP2      LDA     ERRORMS2-1,Y
-            STA     LINE24-1,Y
-            DEY
+            BNE     :LOOP1
+* Print filename on LINE24 overlaying <FILENAME> in the text...
+            PLA
+            STA     PTR
+            PLA
+            STA     PTR+1
+            LDY     #0
+            LDA     (PTR),Y                     ; length byte
+            TAX
+:LOOP2      INY
+            LDA     (PTR),Y
+            STA     LINE24+7,Y
+            DEX
             BNE     :LOOP2
 ERRORXX     JSR     $FF3A                       ; bell
 FOREVER     LDA     #<$0200                     ; sets $03F0 (BRK address) to
@@ -190,8 +208,7 @@ DATACORR    LDY     #28
             JSR     $FF3A                       ; bell
             JMP     FOREVER
 
-ERRORMSG    ASC     "ERROR:  JEWEL.OF.KALDUN IS UNACCESSABLE!"
-ERRORMS2    ASC     "ERROR:  JEWEL.END.GAME  IS UNACCESSABLE!"
+ERRORMSG    ASC     "ERROR:  <FILENAME>      IS UNACCESSABLE!"
 JOK2NAME    STR     "JEWEL.END.GAME"
 JOK_NAME    STR     "JEWEL.OF.KALDUN"
 TIT_NAME    STR     "JEWEL.TITLE.PIC"
