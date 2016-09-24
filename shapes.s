@@ -327,7 +327,7 @@ DRAWSHAP    ENT
 :REPEATX    JMP       :REPEAT
 BITSTORE    HEX       00
 
-* NOTE: This is a hack.  -8 is treated as 8 bites by Merlin32; 
+* NOTE: This is a hack.  -8 is treated as 8 bits by Merlin32; 
 *       thus the MOVW is in error.  Using the value of $FFF8 
 *       because my trusty PC calculator tells me that is correct. :-)
 ARRIVEC2    MOVW      #$FFF8;XMELTOK
