@@ -24,6 +24,10 @@ And, unfortunately, Meltok doesn't always make it!
 
 ![Death](images/death.png)
 
+But, sometimes he does, and he finds the Jewel!
+
+![Jewel of Kaldun](images/jewel.png)
+
 ## Conversion notes
 
 Notes on the migration from classic Merlin to Merlin32:
